@@ -1,13 +1,30 @@
-var express = require('express');
-var pg = require('pg');
-var io = require('socket.io');
+var express = require('express')
+  , app = express()
+  , pg = require('pg');
 
-var app = express.createServer(express.logger());
 app.use("/plugin", express.static(__dirname + '/plugin'));
 app.use("/js", express.static(__dirname + '/js'));
 app.use("/rsc", express.static(__dirname + '/rsc'));
+app.use("/socket.io", express.static(__dirname + '/js'));
 
-var dbURL = process.env.DATABASE_URL || {database:'d44eb75c6ckggo',host:'ec2-54-243-238-144.compute-1.amazonaws.com',port:5432,user:'ngifkstzlkpgnx',password:'HRjCAmNR3QAk7TZ5P7YBvj-Pma',ssl:true};
+GLOBAL.devel = false;
+if (process.argv.indexOf('--devel') > -1){
+   GLOBAL.devel = true;
+}
+
+if (GLOBAL.devel) {
+	var databaseAccess = {database:'pong',host:'localhost'};
+} else {
+	var databaseAccess = {database:'d44eb75c6ckggo',host:'ec2-54-243-238-144.compute-1.amazonaws.com',port:5432,user:'ngifkstzlkpgnx',password:'HRjCAmNR3QAk7TZ5P7YBvj-Pma',ssl:true};
+
+	// assuming io is the Socket.IO server object
+	io.configure(function () { 
+	  io.set("transports", ["xhr-polling"]); 
+	  io.set("polling duration", 10); 
+	});
+}
+
+var dbURL = process.env.DATABASE_URL || databaseAccess;
 var db = new pg.Client(dbURL);
 db.connect();
 
@@ -16,17 +33,29 @@ app.get('/', function(request, response) {
 });
 
 var port = process.env.PORT || 5000;
-app.listen(port, function() {
+var server = app.listen(port, function() {
   console.log("Listening on " + port);
 });
 
-var sio = io.listen(app);
-// assuming io is the Socket.IO server object
-sio.configure(function () { 
-  sio.set("transports", ["xhr-polling"]); 
-  sio.set("polling duration", 10); 
-});
-sio.sockets.on('connection', function(socket){
+var io = require('socket.io').listen(server, {log:true});
+io.sockets.on('connection', function(socket){
     console.log("New connection");
-    socket.emit('news', { hello: 'world' });
+    var self = this;
+    self.P1 = self.P2 = {};
+    // socket.emit('news', { hello: 'world' });
+	socket.on('moved', function( data ) {
+		if ( data.pid == 1 ) {
+			self.P1 = JSON.parse(data.pos);
+		} else {
+			self.P2 = JSON.parse(data.pos);
+		}
+	});
+
+	var moves = setInterval(function(){
+		socket.emit('move', {P1:JSON.stringify(self.P1),P2:JSON.stringify(self.P2)});
+	},100);
+});
+
+io.sockets.on('disconnect', function(){
+	clearInterval(moves);
 });

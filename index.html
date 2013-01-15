@@ -19,14 +19,6 @@
 	</canvas>
 
 </section>
-<script>
-    var serverURL = "http://pong-flyersweb-io.herokuapp.com";
-    var socket = io.connect(serverURL);
-    socket.on('news', function (data) {
-        alert(data.hello);
-        socket.emit('my other event', { my: 'data' });
-    });
-</script>
 
 </body>
 </html>

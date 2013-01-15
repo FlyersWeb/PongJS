@@ -1,3 +1,7 @@
+var serverUrl = window.location.protocol+'//'+window.location.hostname+':'+window.location.port;
+var socket = io.connect(serverUrl);
+
+
 $(document).ready(function() {
 	/* Getting canvas DOM element */
 	var canvas = document.getElementById("game");
@@ -13,7 +17,14 @@ $(document).ready(function() {
 	/* Animating Game */
 	myGame.loop();
 
-	
+	socket.on('move', function (data) {
+		var P1 = JSON.parse(data.P1);
+		var P2 = JSON.parse(data.P2);
+		if ( !jQuery.isEmptyObject(P1) )
+			myGame.P1 = P1;
+		if ( !jQuery.isEmptyObject(P2) )
+			myGame.P2 = P2;
+	});
 });
 
 function GameEngine(ctxt) {
@@ -22,7 +33,7 @@ function GameEngine(ctxt) {
 	this.play = true;
 	
 	this.plato = {mx: 400, my: 300};
-	this.opts = {players: 1}
+	this.opts = {players: 2}
 	this.P1 = {x:0, y:0, width: 20, height: this.plato.my/3};
 	this.P2 = {x:this.plato.mx-20, y:0, width: 20, height: this.plato.my/3};
 	this.Ball = {x:60, y:40, circ: 15, vx: parseInt(Math.random()*10) , vy: parseInt(Math.random()*10), ax: Math.random()*10-5, ay: Math.random()*10-5 }
@@ -44,11 +55,13 @@ function GameEngine(ctxt) {
 			case Keys.UP :
 				if ( this.P1.y > 0 )
 					this.P1.y -= 10;
+				socket.emit('moved', { pos: JSON.stringify(this.P1), pid:1 });
 				break;
 			/* DOWN = Player 1 down */
 			case Keys.DOWN :
 				if ( this.P1.y+this.P1.height < this.plato.my )
 				this.P1.y += 10;
+				socket.emit('moved', { pos: JSON.stringify(this.P1), pid:1 });
 				break;
 			/* Z = Player 2 up */
 			case Keys.Z :
@@ -57,6 +70,7 @@ function GameEngine(ctxt) {
 					if ( this.P2.y > 0 )
 						this.P2.y -= 10;
 				}
+				socket.emit('moved', { pos: JSON.stringify(this.P2), pid:2 });
 				break;
 			/* S = Player 2 up */
 			case Keys.S :
@@ -65,6 +79,7 @@ function GameEngine(ctxt) {
 					if ( this.P2.y+this.P2.height < this.plato.my )
 						this.P2.y += 10;
 				}
+				socket.emit('moved', { pos: JSON.stringify(this.P2), pid:2 });
 				break;
 			/* SPACE = pausing game */
 			case Keys.SP :

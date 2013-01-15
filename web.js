@@ -16,12 +16,6 @@ if (GLOBAL.devel) {
 	var databaseAccess = {database:'pong',host:'localhost'};
 } else {
 	var databaseAccess = {database:'d44eb75c6ckggo',host:'ec2-54-243-238-144.compute-1.amazonaws.com',port:5432,user:'ngifkstzlkpgnx',password:'HRjCAmNR3QAk7TZ5P7YBvj-Pma',ssl:true};
-
-	// assuming io is the Socket.IO server object
-	io.configure(function () { 
-	  io.set("transports", ["xhr-polling"]); 
-	  io.set("polling duration", 10); 
-	});
 }
 
 var dbURL = process.env.DATABASE_URL || databaseAccess;
@@ -38,6 +32,11 @@ var server = app.listen(port, function() {
 });
 
 var io = require('socket.io').listen(server, {log:true});
+	// assuming io is the Socket.IO server object
+	io.configure(function () { 
+	  io.set("transports", ["xhr-polling"]); 
+	  io.set("polling duration", 10); 
+	});
 io.sockets.on('connection', function(socket){
     console.log("New connection");
     var self = this;

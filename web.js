@@ -3,6 +3,9 @@ var pg = require('pg');
 var io = require('socket.io');
 
 var app = express.createServer(express.logger());
+app.use("/plugin", express.static(__dirname + '/plugin'));
+app.use("/js", express.static(__dirname + '/js'));
+app.use("/rsc", express.static(__dirname + '/rsc'));
 
 var dbURL = process.env.DATABASE_URL || {database:'d44eb75c6ckggo',host:'ec2-54-243-238-144.compute-1.amazonaws.com',port:5432,user:'ngifkstzlkpgnx',password:'HRjCAmNR3QAk7TZ5P7YBvj-Pma',ssl:true};
 var db = new pg.Client(dbURL);

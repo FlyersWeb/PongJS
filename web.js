@@ -21,6 +21,11 @@ app.listen(port, function() {
 });
 
 var sio = io.listen(app);
+// assuming io is the Socket.IO server object
+sio.configure(function () { 
+  sio.set("transports", ["xhr-polling"]); 
+  sio.set("polling duration", 10); 
+});
 sio.sockets.on('connection', function(socket){
     console.log("New connection");
     socket.emit('news', { hello: 'world' });

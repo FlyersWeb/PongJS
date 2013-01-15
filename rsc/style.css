@@ -1,0 +1,9 @@
+@charset "utf-8";
+/* CSS Document */
+
+section {
+	width: 800px;
+	height: 400px;
+	margin: 10px auto;
+	position: relative;
+}

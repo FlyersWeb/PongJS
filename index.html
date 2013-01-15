@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Flyers Web : solitaire game</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript" src="plugin/socket.io.js"></script>
+    <script type="text/javascript" src="js/game.js"></script>
+    
+    <link href="rsc/style.css" rel="stylesheet" type="text/css" media="all">
+</head>
+
+<body>
+
+<section>
+
+    <canvas id="game">
+		Sorry, your web browser don't support HTML 5 Canvas, please upgrade.
+	</canvas>
+
+</section>
+<script>
+    var serverURL = "http://pong-flyersweb-io.herokuapp.com";
+    var socket = io.connect(serverURL);
+    socket.on('news', function (data) {
+        alert(data.hello);
+        socket.emit('my other event', { my: 'data' });
+    });
+</script>
+
+</body>
+</html>

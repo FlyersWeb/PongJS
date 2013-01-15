@@ -52,7 +52,7 @@ io.sockets.on('connection', function(socket){
 
 	var moves = setInterval(function(){
 		socket.emit('move', {P1:JSON.stringify(self.P1),P2:JSON.stringify(self.P2)});
-	},100);
+	},500);
 });
 
 io.sockets.on('disconnect', function(){

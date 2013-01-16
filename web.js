@@ -1,3 +1,8 @@
+GLOBAL.devel = false;
+if (process.argv.indexOf('--devel') > -1){
+   GLOBAL.devel = true;
+}
+
 var express = require('express')
   , app = express()
   , conf = require('./js/conf.js')
@@ -8,14 +13,7 @@ app.use("/js", express.static(__dirname + '/js'));
 app.use("/rsc", express.static(__dirname + '/rsc'));
 app.use("/socket.io", express.static(__dirname + '/js'));
 
-GLOBAL.devel = false;
-if (process.argv.indexOf('--devel') > -1){
-   GLOBAL.devel = true;
-}
-
-console.log(conf.databaseAccess);
-
-var dbURL = process.env.DATABASE_URL || conf.databaseAccess;
+var dbURL = process.env.DATABASE_URL || conf['databaseAccess'] ;
 var db = new pg.Client(dbURL);
 db.connect();
 

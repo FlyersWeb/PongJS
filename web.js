@@ -1,5 +1,6 @@
 var express = require('express')
   , app = express()
+  , conf = require('./js/conf.js')
   , pg = require('pg');
 
 app.use("/plugin", express.static(__dirname + '/plugin'));
@@ -12,13 +13,9 @@ if (process.argv.indexOf('--devel') > -1){
    GLOBAL.devel = true;
 }
 
-if (GLOBAL.devel) {
-	var databaseAccess = {database:'pong',host:'localhost'};
-} else {
-	var databaseAccess = {database:'d44eb75c6ckggo',host:'ec2-54-243-238-144.compute-1.amazonaws.com',port:5432,user:'ngifkstzlkpgnx',password:'HRjCAmNR3QAk7TZ5P7YBvj-Pma',ssl:true};
-}
+console.log(conf.databaseAccess);
 
-var dbURL = process.env.DATABASE_URL || databaseAccess;
+var dbURL = process.env.DATABASE_URL || conf.databaseAccess;
 var db = new pg.Client(dbURL);
 db.connect();
 

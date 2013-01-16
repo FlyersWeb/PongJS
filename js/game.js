@@ -16,19 +16,12 @@ $(document).ready(function() {
 	
 	/* Animating Game */
 	myGame.loop();
-
-	socket.on('move', function (data) {
-		var P1 = JSON.parse(data.P1);
-		var P2 = JSON.parse(data.P2);
-		if ( !jQuery.isEmptyObject(P1) )
-			myGame.P1 = P1;
-		if ( !jQuery.isEmptyObject(P2) )
-			myGame.P2 = P2;
-	});
 });
 
 function GameEngine(ctxt) {
 	
+	var self = this;
+
 	this.ctxt = ctxt;
 	this.play = true;
 	
@@ -39,6 +32,15 @@ function GameEngine(ctxt) {
 	this.Ball = {x:60, y:40, circ: 15, vx: parseInt(Math.random()*10) , vy: parseInt(Math.random()*10), ax: Math.random()*10-5, ay: Math.random()*10-5 }
 	
 	this.indx = 0;
+
+	socket.on('move', function (data) {
+		var P1 = JSON.parse(data.P1);
+		var P2 = JSON.parse(data.P2);
+		if ( !jQuery.isEmptyObject(P1) )
+			self.P1 = P1;
+		if ( !jQuery.isEmptyObject(P2) )
+			self.P2 = P2;
+	});
 	
 	this.init = function() {
 		$("#game").attr("width",this.plato.mx+"px");

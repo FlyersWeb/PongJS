@@ -1,7 +1,10 @@
+/* Initilize Socket.IO for global use */
 var serverUrl = window.location.protocol+'//'+window.location.hostname+':'+window.location.port;
 var socket = io.connect(serverUrl);
 
-
+/*
+ * Document loaded
+ */
 $(document).ready(function() {
 	/* Getting canvas DOM element */
 	var canvas = document.getElementById("game");
@@ -19,34 +22,43 @@ $(document).ready(function() {
 });
 
 function GameEngine(ctxt) {
-	
+	/* Saving context */
 	var self = this;
 
+	/* Saving canvas context */
 	this.ctxt = ctxt;
+	/* Game is playing */
 	this.play = true;
 	
+	/* Canvas size */
 	this.plato = {mx: 400, my: 300};
+	/* Number of player */
 	this.opts = {players: 2}
+	/* Players object with sizes and position */
 	this.P1 = {x:0, y:0, width: 20, height: this.plato.my/3};
 	this.P2 = {x:this.plato.mx-20, y:0, width: 20, height: this.plato.my/3};
+	/* Ball object with size, position, acceleration and velocity */
 	this.Ball = {x:60, y:40, circ: 15, vx: parseInt(Math.random()*10) , vy: parseInt(Math.random()*10), ax: Math.random()*10-5, ay: Math.random()*10-5 }
 	
-	this.indx = 0;
-
+	/* Websocket event listening */
 	socket.on('move', function (data) {
+		/* Parsing Websocket data */
 		var P1 = JSON.parse(data.P1);
 		var P2 = JSON.parse(data.P2);
+		/* Depending on position place players */
 		if ( !jQuery.isEmptyObject(P1) )
 			self.P1 = P1;
 		if ( !jQuery.isEmptyObject(P2) )
 			self.P2 = P2;
 	});
 	
+	/* Initialisation of game scene */
 	this.init = function() {
 		$("#game").attr("width",this.plato.mx+"px");
 		$("#game").attr("height",this.plato.my+"px");
 	}
 	
+	/* Key events handler */
 	this.handleKey = function(e) {		
 		/* map keys to constants */
 		var Keys = {UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, Z: 90, S: 83, Q: 81, D: 68, SP: 32}
@@ -55,33 +67,41 @@ function GameEngine(ctxt) {
 		switch( e.which ) {
 			/* UP = Player 1 up */
 			case Keys.UP :
-				if ( this.P1.y > 0 )
+				if ( this.P1.y > 0 ) {
 					this.P1.y -= 10;
-				socket.emit('moved', { pos: JSON.stringify(this.P1), pid:1 });
+					/* When player move, we send event using websocket */
+					socket.emit('moved', { pos: JSON.stringify(this.P1), pid:1 });
+				}
 				break;
 			/* DOWN = Player 1 down */
 			case Keys.DOWN :
-				if ( this.P1.y+this.P1.height < this.plato.my )
-				this.P1.y += 10;
-				socket.emit('moved', { pos: JSON.stringify(this.P1), pid:1 });
+				if ( this.P1.y+this.P1.height < this.plato.my ) {
+					this.P1.y += 10;
+					/* When player move, we send event using websocket */
+					socket.emit('moved', { pos: JSON.stringify(this.P1), pid:1 });
+				}
 				break;
 			/* Z = Player 2 up */
 			case Keys.Z :
 				if ( this.opts.players > 1)
 				{
-					if ( this.P2.y > 0 )
+					if ( this.P2.y > 0 ) {
 						this.P2.y -= 10;
+						/* When player move, we send event using websocket */
+						socket.emit('moved', { pos: JSON.stringify(this.P2), pid:2 });
+					}
 				}
-				socket.emit('moved', { pos: JSON.stringify(this.P2), pid:2 });
 				break;
 			/* S = Player 2 up */
 			case Keys.S :
 				if ( this.opts.players > 1)
 				{
-					if ( this.P2.y+this.P2.height < this.plato.my )
+					if ( this.P2.y+this.P2.height < this.plato.my ) {
 						this.P2.y += 10;
+						/* When player move, we send event using websocket */
+						socket.emit('moved', { pos: JSON.stringify(this.P2), pid:2 });
+					}
 				}
-				socket.emit('moved', { pos: JSON.stringify(this.P2), pid:2 });
 				break;
 			/* SPACE = pausing game */
 			case Keys.SP :
@@ -91,7 +111,7 @@ function GameEngine(ctxt) {
 					this.play = true;
 				break;
 		}
-		
+		return false;
 	}
 	
 	this.loop = function() {

@@ -18,8 +18,34 @@ Why ExpressJS
 
 ExpressJS is a framework working on top of NodeJS in order to ease all web related development thanks to middlewares and useful functions. It is very similar to Django for Python, Rail for Ruby or Zend Framework for PHP without the Object Related Manager features. In our case this framework is useful for complexe web mechanics like sessions management, csrf protection and more.
 
-Why PostgreSql
+How to install
 --------------
 
-PostgreSQL is our database engine for this project. In this case, no matter the kind of database engine, this is a personal choice. The only utility of using a databse is to have persistant data useful for remembering for example player settings, scores and much more.
+Fork/Clone the game repository :
+
+```
+git clone https://github.com/FlyersWeb/PongJS.git
+```
+
+Next install all necesarry modules :
+
+```
+cd PongJS && npm install
+```
+
+And launch the server :
+
+```
+node web.js
+```
+
+And that's it :)
+
+Contact
+-------
+
+@flyersweb
+
+http://www.flyers-web.org
+
 
